@@ -53,6 +53,8 @@
 // export default app;
 
 
+
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -63,14 +65,14 @@ import searchRoutes from './routes/searchRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
-const PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
+const PORT = parseInt(process.env.PORT || '5000', 10);
 
-// Security middleware - Updated for Railway
+// Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// CORS - Allow all origins for production (or specify your frontend URL)
+// CORS configuration for Render
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   credentials: true,
@@ -95,12 +97,13 @@ app.use('/api/', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint (important for Railway)
+// Health check endpoint (important for Render)
 app.get('/health', (req, res) => {
   res.status(200).json({ 
-    status: 'OK', 
+    status: 'healthy', 
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -114,11 +117,12 @@ app.get('/', (req, res) => {
       surahs: '/api/surahs',
       surahById: '/api/surahs/:id',
       search: '/api/search?q=query'
-    }
+    },
+    documentation: 'https://github.com/yourusername/quran-api-backend'
   });
 });
 
-// Routes
+// API Routes
 app.use('/api/surahs', surahRoutes);
 app.use('/api/search', searchRoutes);
 
@@ -133,11 +137,12 @@ app.use((req, res) => {
 // Error handling
 app.use(errorHandler);
 
-// Start server
+// Start server - Important for Render
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📖 Quran API ready at http://localhost:${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`✅ Health check: http://localhost:${PORT}/health`);
 });
 
 export default app;
