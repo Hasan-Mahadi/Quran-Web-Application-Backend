@@ -65,14 +65,13 @@ import searchRoutes from './routes/searchRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
-const PORT = parseInt(process.env.PORT || '5000', 10);
 
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// CORS configuration for Render
+// CORS configuration
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   credentials: true,
@@ -83,10 +82,10 @@ app.use(cors({
 // Compression
 app.use(compression());
 
-// Rate limiting
+// Rate limiting (adjusted for serverless)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 100,
   message: 'Too many requests from this IP',
   standardHeaders: true,
   legacyHeaders: false,
@@ -97,12 +96,11 @@ app.use('/api/', limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check endpoint (important for Render)
+// Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'healthy', 
     timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development'
   });
 });
@@ -117,8 +115,7 @@ app.get('/', (req, res) => {
       surahs: '/api/surahs',
       surahById: '/api/surahs/:id',
       search: '/api/search?q=query'
-    },
-    documentation: 'https://github.com/yourusername/quran-api-backend'
+    }
   });
 });
 
@@ -137,12 +134,5 @@ app.use((req, res) => {
 // Error handling
 app.use(errorHandler);
 
-// Start server - Important for Render
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📖 Quran API ready at http://localhost:${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`✅ Health check: http://localhost:${PORT}/health`);
-});
-
+// Export for Vercel (instead of app.listen)
 export default app;
