@@ -1,0 +1,19 @@
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[phases.start]
+cmd = "npm start"
+
+[build]
+install = ["npm install"]
+build = ["npm run build"]
+start = "npm start"
+
+[[ports]]
+port = "5000"
