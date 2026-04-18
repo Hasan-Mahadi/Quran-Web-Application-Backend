@@ -6,7 +6,7 @@ const dataPath = path.join(__dirname, '../data');
 function verifyFile(filename: string): boolean {
   const filePath = path.join(dataPath, filename);
   if (!fs.existsSync(filePath)) {
-    console.error(`❌ Missing: ${filename}`);
+    console.error(`Missing: ${filename}`);
     return false;
   }
   
@@ -26,7 +26,7 @@ function verifyFile(filename: string): boolean {
     
     return true;
   } catch (error) {
-    console.error(`❌ Invalid JSON: ${filename}`, error);
+    console.error(`Invalid JSON: ${filename}`, error);
     return false;
   }
 }
@@ -34,7 +34,7 @@ function verifyFile(filename: string): boolean {
 function verifyChaptersFile(): boolean {
   const filePath = path.join(dataPath, 'chapters/index.json');
   if (!fs.existsSync(filePath)) {
-    console.error(`❌ Missing: chapters/index.json`);
+    console.error(`Missing: chapters/index.json`);
     return false;
   }
   
@@ -46,12 +46,12 @@ function verifyChaptersFile(): boolean {
     console.log(`   - Example: ${data[0].englishName} (${data[0].name})`);
     return true;
   } catch (error) {
-    console.error(`❌ Invalid JSON: chapters/index.json`, error);
+    console.error(`Invalid JSON: chapters/index.json`, error);
     return false;
   }
 }
 
-console.log('\n📖 Verifying Quran Data Files...\n');
+console.log('\nVerifying Quran Data Files...\n');
 
 const files = ['quran.json', 'quran_en.json'];
 const allValid = files.every(verifyFile);
@@ -60,5 +60,5 @@ const chaptersValid = verifyChaptersFile();
 if (allValid && chaptersValid) {
   console.log('\n✅ All data files are valid!\n');
 } else {
-  console.log('\n❌ Some files are missing or invalid!\n');
+  console.log('\nSome files are missing or invalid!\n');
 }
